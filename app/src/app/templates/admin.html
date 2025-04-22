@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-header">
+  <h2>Administration Panel</h2>
+  <div class="admin-actions">
+    <button class="btn btn-sm btn-outline-secondary">Refresh Data</button>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h1 class="display-4">{{ stats.total_users }}</h1>
+        <p class="text-muted">Total Users</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h1 class="display-4">{{ stats.active_subscriptions }}</h1>
+        <p class="text-muted">Active Subscriptions</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h1 class="display-4">${{ stats.monthly_revenue }}</h1>
+        <p class="text-muted">Monthly Revenue</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h1 class="display-4">24h</h1>
+        <p class="text-muted">System Uptime</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Recent Activity</h5>
+      </div>
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Action</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Activity logs would go here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

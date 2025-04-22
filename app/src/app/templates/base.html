@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Churn Analytics{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+    {% block head %}{% endblock %}
+  </head>
+
+  <body class="bg-gray-50">
+    <nav class="bg-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <a href="{{ url_for('main.index') }}" class="text-white font-bold text-xl">Churn Analytics</a>
+            </div>
+            {% if current_user.is_authenticated %}
+            <div class="hidden md:block">
+              <div class="ml-10 flex items-baseline space-x-4">
+                <a href="{{ url_for('main.dashboard') }}"
+                  class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.dashboard' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} px-3 py-2 rounded-md text-sm font-medium">
+                  Dashboard
+                </a>
+                <a href="{{ url_for('main.customers') }}"
+                  class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.customers' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} px-3 py-2 rounded-md text-sm font-medium">
+                  Customers
+                </a>
+                <a href="{{ url_for('main.dynamic_analysis') }}"
+                  class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.dynamic_analysis' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} px-3 py-2 rounded-md text-sm font-medium">
+                  Dynamic Analysis
+                </a>
+                <a href="{{ url_for('main.trends') }}"
+                  class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.trends' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} px-3 py-2 rounded-md text-sm font-medium">
+                  Trends
+                </a>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-4 flex items-center md:ml-6">
+              {% if current_user.is_authenticated %}
+              <div class="ml-3 relative">
+                <div>
+                  <button type="button"
+                    class="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                    id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                    <span class="sr-only">Open user menu</span>
+                    <span class="text-gray-300 px-3 py-2">{{ current_user.username }}</span>
+                  </button>
+                </div>
+                <div
+                  class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+                  id="user-menu">
+                  <a href="{{ url_for('main.logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    role="menuitem" tabindex="-1">Sign out</a>
+                </div>
+              </div>
+              {% else %}
+              <div class="flex space-x-4">
+                <a href="{{ url_for('main.login') }}"
+                  class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sign
+                  in</a>
+                <a href="{{ url_for('main.signup') }}"
+                  class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sign
+                  up</a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div class="md:hidden" id="mobile-menu">
+        {% if current_user.is_authenticated %}
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <a href="{{ url_for('main.dashboard') }}"
+            class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.dashboard' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            Dashboard
+          </a>
+          <a href="{{ url_for('main.customers') }}"
+            class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.customers' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            Customers
+          </a>
+          <a href="{{ url_for('main.dynamic_analysis') }}"
+            class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.dynamic_analysis' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            Dynamic Analysis
+          </a>
+          <a href="{{ url_for('main.trends') }}"
+            class="{{ 'bg-gray-900 text-white' if request.endpoint == 'main.trends' else 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            Trends
+          </a>
+        </div>
+        <div class="pt-4 pb-3 border-t border-gray-700">
+          <div class="flex items-center px-5">
+            <div class="ml-3">
+              <div class="text-base font-medium leading-none text-white">{{ current_user.username }}</div>
+            </div>
+          </div>
+          <div class="mt-3 px-2 space-y-1">
+            <a href="{{ url_for('main.logout') }}"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">Sign
+              out</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <a href="{{ url_for('main.login') }}"
+            class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Sign
+            in</a>
+          <a href="{{ url_for('main.signup') }}"
+            class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Sign
+            up</a>
+        </div>
+        {% endif %}
+      </div>
+    </nav>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      {% for category, message in messages %}
+      <div
+        class="rounded-md p-4 mb-4 {% if category == 'error' %}bg-red-50 text-red-800{% else %}bg-green-50 text-green-800{% endif %}"
+        role="alert">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Main content -->
+    <main class="py-6">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts -->
+    <script>
+      // Toggle user menu
+      const userMenuButton = document.getElementById('user-menu-button');
+      const userMenu = document.getElementById('user-menu');
+      if (userMenuButton && userMenu) {
+        userMenuButton.addEventListener('click', () => {
+          userMenu.classList.toggle('hidden');
+        });
+      }
+
+      // Close user menu when clicking outside
+      document.addEventListener('click', (event) => {
+        if (userMenu && !userMenu.contains(event.target) && !userMenuButton.contains(event.target)) {
+          userMenu.classList.add('hidden');
+        }
+      });
+
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+    </script>
+    {% block scripts %}{% endblock %}
+  </body>
+
+</html>

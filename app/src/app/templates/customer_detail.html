@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Details - Churn Analytics{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="mb-6">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <h1 class="text-2xl font-bold mb-4">Customer Details</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h2 class="text-xl font-semibold mb-2">Basic Information</h2>
+        <dl class="grid grid-cols-2 gap-4">
+          <dt class="font-medium text-gray-500">Customer ID:</dt>
+          <dd>{{ customer.customer_id }}</dd>
+
+          <dt class="font-medium text-gray-500">Name:</dt>
+          <dd>{{ customer.name }}</dd>
+
+          <dt class="font-medium text-gray-500">Age:</dt>
+          <dd>{{ customer.age }}</dd>
+
+          <dt class="font-medium text-gray-500">Gender:</dt>
+          <dd>{{ customer.gender }}</dd>
+
+          <dt class="font-medium text-gray-500">Location:</dt>
+          <dd>{{ customer.location }}</dd>
+        </dl>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-2">Subscription Details</h2>
+        <dl class="grid grid-cols-2 gap-4">
+          <dt class="font-medium text-gray-500">Subscription Length:</dt>
+          <dd>{{ customer.subscription_length_months }} months</dd>
+
+          <dt class="font-medium text-gray-500">Monthly Bill:</dt>
+          <dd>${{ "%.2f"|format(customer.monthly_bill) }}</dd>
+
+          <dt class="font-medium text-gray-500">Total Usage:</dt>
+          <dd>{{ "%.1f"|format(customer.total_usage_gb) }} GB</dd>
+
+          <dt class="font-medium text-gray-500">Churn Score:</dt>
+          <dd>
+            <span class="px-2 py-1 rounded-full text-sm font-medium
+              {% if customer.churn_score > 0.7 %}
+                bg-red-100 text-red-800
+              {% elif customer.churn_score > 0.4 %}
+                bg-yellow-100 text-yellow-800
+              {% else %}
+                bg-green-100 text-green-800
+              {% endif %}">
+              {{ "%.2f"|format(customer.churn_score) }}
+            </span>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+      <div class="space-y-4">
+        {% for activity in customer.activities %}
+        <div class="border-l-4 border-gray-200 pl-4">
+          <p class="text-sm text-gray-500">{{ activity.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+          <p class="font-medium">{{ activity.description }}</p>
+          {% if activity.activity_metadata %}
+          <p class="text-sm text-gray-600">{{ activity.activity_metadata|tojson }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

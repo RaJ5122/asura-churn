@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">Dynamic Analysis</h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Analysis Form -->
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Filter Options</h2>
+      <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              {{ form.age_range.label }}
+            </label>
+            {{ form.age_range(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight
+            focus:outline-none focus:shadow-outline") }}
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              {{ form.location.label }}
+            </label>
+            {{ form.location(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight
+            focus:outline-none focus:shadow-outline") }}
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              {{ form.gender.label }}
+            </label>
+            {{ form.gender(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight
+            focus:outline-none focus:shadow-outline") }}
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              {{ form.subscription_range.label }}
+            </label>
+            {{ form.subscription_range(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700
+            leading-tight focus:outline-none focus:shadow-outline") }}
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              {{ form.usage_range.label }}
+            </label>
+            {{ form.usage_range(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700
+            leading-tight focus:outline-none focus:shadow-outline") }}
+          </div>
+
+          <button type="submit"
+            class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Analyze
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Analysis Results -->
+    <div class="space-y-6">
+      {% if analysis.total_customers > 0 %}
+      <!-- Overview Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Total Customers</h3>
+          <p class="text-2xl font-semibold text-gray-900">{{ analysis.total_customers }}</p>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Churn Rate</h3>
+          <p class="text-2xl font-semibold text-gray-900">{{ "%.2f"|format(analysis.churn_rate) }}%</p>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Avg Monthly Bill</h3>
+          <p class="text-2xl font-semibold text-gray-900">${{ "%.2f"|format(analysis.avg_monthly_bill) }}</p>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Max Monthly Bill</h3>
+          <p class="text-2xl font-semibold text-gray-900">${{ "%.2f"|format(analysis.max_monthly_bill) }}</p>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Avg Usage</h3>
+          <p class="text-2xl font-semibold text-gray-900">{{ "%.2f"|format(analysis.avg_usage) }} GB</p>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Avg Risk</h3>
+          <p class="text-2xl font-semibold text-gray-900">{{ "%.2f"|format(analysis.avg_risk_percentage) }}%</p>
+        </div>
+      </div>
+
+      <!-- Risk Distributions -->
+      <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Risk Distribution (Based on Monthly Bill)</h2>
+        <div class="space-y-4">
+          {% for risk_level, count in analysis.bill_risk_distribution.items() %}
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">{{ risk_level|replace('_', ' ')|title }}</span>
+              <span class="text-sm font-medium text-gray-700">{{ count }}</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="h-2.5 rounded-full {{ 
+                                    'bg-red-600' if risk_level == 'very_high' else 
+                                    'bg-orange-500' if risk_level == 'high' else 
+                                    'bg-yellow-500' if risk_level == 'medium' else 
+                                    'bg-green-500' if risk_level == 'low' else 
+                                    'bg-gray-500' 
+                                }}" style="width: {{ (count / analysis.total_customers * 100)|round(1) }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Churn Risk Distribution -->
+      <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Churn Risk Distribution</h2>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">High Risk</span>
+              <span class="text-sm font-medium text-gray-700">{{ analysis.high_risk_customers }}</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-red-600 h-2.5 rounded-full"
+                style="width: {{ (analysis.high_risk_customers / analysis.total_customers * 100)|round(1) }}%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">Medium Risk</span>
+              <span class="text-sm font-medium text-gray-700">{{ analysis.medium_risk_customers }}</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-yellow-500 h-2.5 rounded-full"
+                style="width: {{ (analysis.medium_risk_customers / analysis.total_customers * 100)|round(1) }}%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">Low Risk</span>
+              <span class="text-sm font-medium text-gray-700">{{ analysis.low_risk_customers }}</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-green-500 h-2.5 rounded-full"
+                style="width: {{ (analysis.low_risk_customers / analysis.total_customers * 100)|round(1) }}%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other Distributions -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Age Distribution -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-4">Age Distribution</h2>
+          <div class="space-y-4">
+            {% for age_group, count in analysis.age_distribution.items() %}
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-gray-700">{{ age_group }}</span>
+                <span class="text-sm font-medium text-gray-700">{{ count }}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-blue-600 h-2.5 rounded-full"
+                  style="width: {{ (count / analysis.total_customers * 100)|round(1) }}%"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Gender Distribution -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-4">Gender Distribution</h2>
+          <div class="space-y-4">
+            {% for gender, count in analysis.gender_distribution.items() %}
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-gray-700">{{ gender|title }}</span>
+                <span class="text-sm font-medium text-gray-700">{{ count }}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-purple-600 h-2.5 rounded-full"
+                  style="width: {{ (count / analysis.total_customers * 100)|round(1) }}%"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Subscription Distribution -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-4">Subscription Distribution</h2>
+          <div class="space-y-4">
+            {% for range, count in analysis.subscription_distribution.items() %}
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-gray-700">{{ range }}</span>
+                <span class="text-sm font-medium text-gray-700">{{ count }}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-indigo-600 h-2.5 rounded-full"
+                  style="width: {{ (count / analysis.total_customers * 100)|round(1) }}%"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Usage Distribution -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-4">Usage Distribution</h2>
+          <div class="space-y-4">
+            {% for range, count in analysis.usage_distribution.items() %}
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-gray-700">{{ range }}</span>
+                <span class="text-sm font-medium text-gray-700">{{ count }}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-teal-600 h-2.5 rounded-full"
+                  style="width: {{ (count / analysis.total_customers * 100)|round(1) }}%"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Distribution -->
+      <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Location Distribution</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {% for location, count in analysis.location_distribution.items() %}
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-700">{{ location }}</span>
+              <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ count }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% else %}
+      <div class="bg-white shadow-md rounded-lg p-6">
+        <div class="text-center py-8">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="mt-2 text-lg font-medium text-gray-900">No Data Available</h3>
+          <p class="mt-1 text-sm text-gray-500">Please upload customer data or adjust your filters.</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

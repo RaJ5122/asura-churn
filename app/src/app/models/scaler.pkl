@@ -1,0 +1,3 @@
+# This is a placeholder file. In a real application, this would be a binary file
+# containing a trained scikit-learn StandardScaler. For development purposes, we'll use
+# this text file to prevent FileNotFoundError. 

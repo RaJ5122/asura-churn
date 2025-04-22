@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Add New Customer</h3>
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      <form method="POST" action="{{ url_for('main.add_customer') }}">
+        {{ form.csrf_token }}
+        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+          <div class="sm:col-span-3">
+            <label for="customer_id" class="block text-sm font-medium text-gray-700">Customer ID</label>
+            <div class="mt-1">
+              <input type="text" name="customer_id" id="customer_id" required
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+            <div class="mt-1">
+              <input type="text" name="name" id="name" required
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+            <div class="mt-1">
+              <input type="number" name="age" id="age"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+            <div class="mt-1">
+              <select name="gender" id="gender"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+            <div class="mt-1">
+              <input type="text" name="location" id="location"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="subscription_length_months" class="block text-sm font-medium text-gray-700">Subscription Length
+              (months)</label>
+            <div class="mt-1">
+              <input type="number" name="subscription_length_months" id="subscription_length_months" required
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="monthly_bill" class="block text-sm font-medium text-gray-700">Monthly Bill</label>
+            <div class="mt-1">
+              <input type="number" step="0.01" name="monthly_bill" id="monthly_bill" required
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="total_usage_gb" class="block text-sm font-medium text-gray-700">Total Usage (GB)</label>
+            <div class="mt-1">
+              <input type="number" step="0.01" name="total_usage_gb" id="total_usage_gb" required
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <button type="submit"
+            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Add Customer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

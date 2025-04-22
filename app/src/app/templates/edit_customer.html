@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+      <div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Edit Customer</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Update customer information.</p>
+      </div>
+      <div>
+        <a href="{{ url_for('main.view_customer', customer_id=customer.id) }}"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          Cancel
+        </a>
+      </div>
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      <form method="POST" class="space-y-6">
+        {{ form.csrf_token }}
+        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+          <div class="sm:col-span-3">
+            <label for="customer_id" class="block text-sm font-medium text-gray-700">Customer ID</label>
+            <div class="mt-1">
+              {{ form.customer_id(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm
+              border-gray-300 rounded-md") }}
+            </div>
+            {% if form.customer_id.errors %}
+            {% for error in form.customer_id.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="name" class="block text-sm font-medium text-gray-700">Full name</label>
+            <div class="mt-1">
+              {{ form.name(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm
+              border-gray-300 rounded-md") }}
+            </div>
+            {% if form.name.errors %}
+            {% for error in form.name.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+            <div class="mt-1">
+              {{ form.age(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm
+              border-gray-300 rounded-md") }}
+            </div>
+            {% if form.age.errors %}
+            {% for error in form.age.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+            <div class="mt-1">
+              {{ form.gender(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm
+              border-gray-300 rounded-md") }}
+            </div>
+            {% if form.gender.errors %}
+            {% for error in form.gender.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+            <div class="mt-1">
+              {{ form.location(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm
+              border-gray-300 rounded-md") }}
+            </div>
+            {% if form.location.errors %}
+            {% for error in form.location.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="subscription_length_months" class="block text-sm font-medium text-gray-700">Subscription Length
+              (months)</label>
+            <div class="mt-1">
+              {{ form.subscription_length_months(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block
+              w-full sm:text-sm border-gray-300 rounded-md") }}
+            </div>
+            {% if form.subscription_length_months.errors %}
+            {% for error in form.subscription_length_months.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="monthly_bill" class="block text-sm font-medium text-gray-700">Monthly Bill ($)</label>
+            <div class="mt-1">
+              {{ form.monthly_bill(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full
+              sm:text-sm border-gray-300 rounded-md") }}
+            </div>
+            {% if form.monthly_bill.errors %}
+            {% for error in form.monthly_bill.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="total_usage_gb" class="block text-sm font-medium text-gray-700">Total Usage (GB)</label>
+            <div class="mt-1">
+              {{ form.total_usage_gb(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full
+              sm:text-sm border-gray-300 rounded-md") }}
+            </div>
+            {% if form.total_usage_gb.errors %}
+            {% for error in form.total_usage_gb.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pt-5">
+          <div class="flex justify-end">
+            <button type="submit"
+              class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Update Customer
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

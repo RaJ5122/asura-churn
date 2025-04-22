@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h2>Churn Analysis Dashboard</h2>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Key Metrics -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Customers</h5>
+          <h2>{{ analysis.total_customers }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <h5 class="card-title">Churn Rate</h5>
+          <h2>{{ "%.1f"|format(analysis.churn_rate * 100) }}%</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <h5 class="card-title">Avg Monthly Bill</h5>
+          <h2>${{ "%.2f"|format(analysis.avg_monthly_bill) }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">Avg Usage</h5>
+          <h2>{{ "%.1f"|format(analysis.avg_usage) }} GB</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Segments -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Customer Segment Distribution</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            {% for segment, percentage in analysis.segment_distribution.items() %}
+            <div class="col-md-4">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">{{ segment }}</h5>
+                  <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: {{ percentage * 100 }}%">
+                      {{ "%.1f"|format(percentage * 100) }}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Analysis -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Churn Analysis by Location</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Location</th>
+                  <th>Total Customers</th>
+                  <th>Churn Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for location, data in analysis.location_analysis.items() %}
+                <tr>
+                  <td>{{ location }}</td>
+                  <td>{{ data.total }}</td>
+                  <td>
+                    <div class="progress">
+                      <div
+                        class="progress-bar {% if data.churn/data.total > 0.3 %}bg-danger{% elif data.churn/data.total > 0.15 %}bg-warning{% else %}bg-success{% endif %}"
+                        role="progressbar" style="width: {{ (data.churn/data.total) * 100 }}%">
+                        {{ "%.1f"|format((data.churn/data.total) * 100) }}%
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Age Group Analysis -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Churn Analysis by Age Group</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Age Group</th>
+                  <th>Total Customers</th>
+                  <th>Churn Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for age_group, data in analysis.age_group_analysis.items() %}
+                <tr>
+                  <td>{{ age_group }}</td>
+                  <td>{{ data.total }}</td>
+                  <td>
+                    <div class="progress">
+                      <div
+                        class="progress-bar {% if data.churn/data.total > 0.3 %}bg-danger{% elif data.churn/data.total > 0.15 %}bg-warning{% else %}bg-success{% endif %}"
+                        role="progressbar" style="width: {{ (data.churn/data.total) * 100 }}%">
+                        {{ "%.1f"|format((data.churn/data.total) * 100) }}%
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gender Analysis -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Churn Analysis by Gender</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Gender</th>
+                  <th>Total Customers</th>
+                  <th>Churn Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for gender, data in analysis.gender_analysis.items() %}
+                <tr>
+                  <td>{{ gender }}</td>
+                  <td>{{ data.total }}</td>
+                  <td>
+                    <div class="progress">
+                      <div
+                        class="progress-bar {% if data.churn/data.total > 0.3 %}bg-danger{% elif data.churn/data.total > 0.15 %}bg-warning{% else %}bg-success{% endif %}"
+                        role="progressbar" style="width: {{ (data.churn/data.total) * 100 }}%">
+                        {{ "%.1f"|format((data.churn/data.total) * 100) }}%
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription Length Analysis -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Churn Analysis by Subscription Length</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Subscription Length</th>
+                  <th>Total Customers</th>
+                  <th>Churn Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for length, data in analysis.subscription_length_analysis.items() %}
+                <tr>
+                  <td>{{ length }}</td>
+                  <td>{{ data.total }}</td>
+                  <td>
+                    <div class="progress">
+                      <div
+                        class="progress-bar {% if data.churn/data.total > 0.3 %}bg-danger{% elif data.churn/data.total > 0.15 %}bg-warning{% else %}bg-success{% endif %}"
+                        role="progressbar" style="width: {{ (data.churn/data.total) * 100 }}%">
+                        {{ "%.1f"|format((data.churn/data.total) * 100) }}%
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

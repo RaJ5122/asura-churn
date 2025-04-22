@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  {% if not has_data %}
+  <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-yellow-700">
+          No customer data available for trend analysis. Please add customers and ensure they have churn scores
+          calculated.
+        </p>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Segment Analysis -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Segment Analysis</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Churn risk by customer segments</p>
+      </div>
+      <div class="border-t border-gray-200">
+        <dl>
+          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Usage Segments</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <div class="grid grid-cols-3 gap-4">
+                <div>
+                  <span class="font-medium">Low Usage:</span>
+                  <span class="text-red-600">{{ "%.1f"|format(segment_analysis.usage_segments.low * 100) }}%</span>
+                </div>
+                <div>
+                  <span class="font-medium">Medium Usage:</span>
+                  <span class="text-yellow-600">{{ "%.1f"|format(segment_analysis.usage_segments.medium * 100)
+                    }}%</span>
+                </div>
+                <div>
+                  <span class="font-medium">High Usage:</span>
+                  <span class="text-green-600">{{ "%.1f"|format(segment_analysis.usage_segments.high * 100) }}%</span>
+                </div>
+              </div>
+            </dd>
+          </div>
+          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Subscription Segments</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <div class="grid grid-cols-3 gap-4">
+                <div>
+                  <span class="font-medium">New Customers:</span>
+                  <span class="text-red-600">{{ "%.1f"|format(segment_analysis.subscription_segments.new * 100)
+                    }}%</span>
+                </div>
+                <div>
+                  <span class="font-medium">Medium Term:</span>
+                  <span class="text-yellow-600">{{ "%.1f"|format(segment_analysis.subscription_segments.medium * 100)
+                    }}%</span>
+                </div>
+                <div>
+                  <span class="font-medium">Long Term:</span>
+                  <span class="text-green-600">{{ "%.1f"|format(segment_analysis.subscription_segments.long_term * 100)
+                    }}%</span>
+                </div>
+              </div>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Location Analysis -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Location Analysis</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Churn risk by customer location</p>
+      </div>
+      <div class="border-t border-gray-200">
+        <dl>
+          {% for location, stats in location_analysis.items() %}
+          <div
+            class="{% if loop.index % 2 == 0 %}bg-white{% else %}bg-gray-50{% endif %} px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">{{ location }}</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <div class="flex justify-between">
+                <span>Average Churn Risk: {{ "%.1f"|format(stats.mean * 100) }}%</span>
+                <span>Customers: {{ stats.count }}</span>
+              </div>
+            </dd>
+          </div>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
+
+    <!-- Future Predictions -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Future Churn Predictions</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Predicted churn rates for the next 6 months</p>
+      </div>
+      <div class="border-t border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+          <div class="h-64">
+            <canvas id="predictionsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Influencing Factors -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Key Influencing Factors</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Factors most strongly correlated with churn</p>
+      </div>
+      <div class="border-t border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+          <div class="space-y-4">
+            {% for factor, importance in factor_importance.items() %}
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-gray-700">{{ factor }}</span>
+                <span class="text-sm text-gray-500">{{ "%.1f"|format(importance * 100) }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: {{ importance * 100 }}%"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Predicted Changes -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Predicted Changes</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Expected changes in key factors</p>
+      </div>
+      <div class="border-t border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+          <div class="grid grid-cols-2 gap-4">
+            {% for factor, change in factor_changes.items() %}
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-900">{{ factor }}</h4>
+              <p class="mt-1 text-sm text-gray-500">
+                {% if change > 1 %}
+                Expected increase: {{ "%.1f"|format((change - 1) * 100) }}%
+                {% else %}
+                Expected decrease: {{ "%.1f"|format((1 - change) * 100) }}%
+                {% endif %}
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('predictionsChart').getContext('2d');
+    const predictions = {{ future_predictions| tojson | safe
+  }};
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Next Month', '2 Months', '3 Months', '4 Months', '5 Months', '6 Months'],
+      datasets: [{
+        label: 'Predicted Churn Rate',
+        data: predictions,
+        borderColor: 'rgb(99, 102, 241)',
+        tension: 0.1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              return (value * 100).toFixed(1) + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+  });
+</script>
+{% endblock %}
